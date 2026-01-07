@@ -54,6 +54,32 @@ flask --app weather_proxy.app:create_app run --debug
 
 ## API Endpoints
 
+### GET /
+
+API information and discovery endpoint.
+
+**Request:**
+```bash
+curl "http://localhost:8000/"
+```
+
+**Response (200 OK):**
+```json
+{
+  "name": "Weather Proxy API",
+  "version": "1.0.0",
+  "description": "A proxy service for Open-Meteo weather data with caching and resilience patterns",
+  "endpoints": {
+    "GET /": "API information (this endpoint)",
+    "GET /weather?city={name}": "Get current weather for a city",
+    "GET /health": "Service health check with dependency status",
+    "GET /metrics": "Prometheus-compatible metrics"
+  },
+  "example": "GET /weather?city=Berlin",
+  "docs": "https://github.com/ilya1200/meteo_proxy#readme"
+}
+```
+
 ### GET /weather?city={city_name}
 
 Get current weather for a city.
@@ -206,6 +232,19 @@ Environment variables (set in `env/.env` or via Docker):
 4. **Security**: Non-root Docker user, minimal base image, health checks.
 
 5. **Error Handling**: Graceful degradation - cache failures don't break requests, external API failures return meaningful errors.
+
+## Testing with Postman
+
+A ready-to-use Postman collection is available for testing all API endpoints:
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://web.postman.co/workspace/My-Workspace~88973061-0ae2-413b-8411-099588a2cbcc/collection/7189771-8e3d7f5b-cafc-4520-af2a-d56d22dbb453?action=share&source=copy-link&creator=7189771)
+
+The collection includes requests for:
+- API discovery (`/`)
+- Weather queries (`/weather?city=Berlin`)
+- Health checks (`/health`)
+- Prometheus metrics (`/metrics`)
+- Error cases (missing city, invalid city)
 
 ## Development
 
