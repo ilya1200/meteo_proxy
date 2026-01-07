@@ -1,8 +1,9 @@
 """Flask application factory."""
 
 import time
+from typing import Any
 
-from flask import Flask, g
+from flask import Flask, g, jsonify
 
 from weather_proxy import __version__
 from weather_proxy.config import get_config
@@ -78,6 +79,24 @@ def create_app(
 
     # Register blueprints
     _register_blueprints(app)
+
+    # Root endpoint - API information
+    @app.route("/")
+    def api_root() -> tuple[Any, int]:
+        """Return API information and available endpoints."""
+        return jsonify({
+            "name": "Weather Proxy API",
+            "version": __version__,
+            "description": "A proxy service for Open-Meteo weather data with caching and resilience patterns",
+            "endpoints": {
+                "GET /": "API information (this endpoint)",
+                "GET /weather?city={name}": "Get current weather for a city",
+                "GET /health": "Service health check with dependency status",
+                "GET /metrics": "Prometheus-compatible metrics",
+            },
+            "example": "GET /weather?city=Berlin",
+            "docs": "https://github.com/ilya1200/meteo_proxy#readme",
+        }), 200
 
     return app
 
