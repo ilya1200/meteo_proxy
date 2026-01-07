@@ -1,0 +1,34 @@
+{
+	"info": {
+		"_postman_id": "8e3d7f5b-cafc-4520-af2a-d56d22dbb453",
+		"name": "meteo_proxy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7189771"
+	},
+	"item": [
+		{
+			"name": "Basic Info",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get Weather for City",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get Weather - City Not Found",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
