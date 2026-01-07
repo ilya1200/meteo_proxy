@@ -37,7 +37,7 @@ COPY --from=builder /app/.venv /app/.venv
 
 # Copy application code
 COPY src/ src/
-COPY env.example env.example
+COPY env/.env.example env/.env.example
 
 # Set environment variables
 ENV PATH="/app/.venv/bin:$PATH"
