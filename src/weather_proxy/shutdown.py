@@ -3,7 +3,8 @@
 import signal
 import sys
 import threading
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 # Flag to indicate shutdown is in progress
 _shutdown_event = threading.Event()
@@ -25,13 +26,13 @@ def register_shutdown_callback(callback: Callable[[], None]) -> None:
     _shutdown_callbacks.append(callback)
 
 
-def _handle_signal(signum: int, frame: Any) -> None:
+def _handle_signal(signum: int, _frame: Any) -> None:
     """
     Handle shutdown signals (SIGTERM, SIGINT).
 
     Args:
         signum: Signal number received.
-        frame: Current stack frame.
+        _frame: Current stack frame (unused).
     """
     signal_name = signal.Signals(signum).name
     print(f"\nReceived {signal_name}, initiating graceful shutdown...")

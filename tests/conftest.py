@@ -47,9 +47,23 @@ def mock_redis():
 
 @pytest.fixture(autouse=True)
 def reset_cache():
-    """Reset cache service before each test."""
-    from weather_proxy.routes.weather import reset_cache_service
+    """Reset cache service, circuit breakers, and clear cache data before each test."""
+    from weather_proxy.resilience.circuit_breaker import reset_circuit_breakers
+    from weather_proxy.routes.weather import get_cache_service, reset_cache_service
 
+    # Reset all module-level state
     reset_cache_service()
+    reset_circuit_breakers()
+
+    # Clear all cached data from Redis test database
+    try:
+        cache_service = get_cache_service()
+        cache_service.client.flushdb()
+    except Exception:
+        pass  # Redis might not be available in some tests
+
     yield
+
+    # Cleanup after test
     reset_cache_service()
+    reset_circuit_breakers()

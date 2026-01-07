@@ -16,7 +16,9 @@ def get_uptime_seconds() -> float:
     return time.time() - _start_time
 
 
-def create_app(config_override: dict | None = None, setup_signals: bool = True) -> Flask:
+def create_app(
+    config_override: dict | None = None, setup_signals: bool = True
+) -> Flask:
     """
     Create and configure the Flask application.
 
