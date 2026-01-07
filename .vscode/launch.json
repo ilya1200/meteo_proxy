@@ -1,0 +1,160 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flask: Run Server",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "flask",
+            "args": [
+                "--app",
+                "weather_proxy.app:create_app",
+                "run",
+                "--debug",
+                "--port",
+                "5000"
+            ],
+            "env": {
+                "FLASK_ENV": "development",
+                "REDIS_URL": "redis://localhost:6379/0"
+            },
+            "jinja": true,
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Flask: Run with Gunicorn",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "gunicorn",
+            "args": [
+                "--bind",
+                "0.0.0.0:8000",
+                "--workers",
+                "1",
+                "--reload",
+                "weather_proxy.app:create_app()"
+            ],
+            "env": {
+                "FLASK_ENV": "development",
+                "REDIS_URL": "redis://localhost:6379/0"
+            },
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Pytest: Run All Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "tests/",
+                "-v",
+                "--tb=short"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Pytest: Run Unit Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "tests/unit/",
+                "-v",
+                "--tb=short"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Pytest: Run Integration Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "tests/integration/",
+                "-v",
+                "--tb=short"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Pytest: Run Current Test File",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "${file}",
+                "-v",
+                "--tb=long"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Pytest: test_weather_service.py",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "tests/unit/test_weather_service.py",
+                "-v",
+                "--tb=short"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Pytest: test_geocoding_service.py",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "tests/unit/test_geocoding_service.py",
+                "-v",
+                "--tb=short"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Pytest: test_cache_service.py",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "tests/unit/test_cache_service.py",
+                "-v",
+                "--tb=short"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Pytest: Run with Coverage",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "tests/",
+                "-v",
+                "--cov=src/weather_proxy",
+                "--cov-report=term-missing",
+                "--cov-report=html"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Python: Debug Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

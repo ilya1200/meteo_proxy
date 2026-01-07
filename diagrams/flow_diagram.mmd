@@ -1,0 +1,50 @@
+sequenceDiagram
+    autonumber
+    participant Client
+    participant Flask as Flask App
+    participant Middleware
+    participant Cache as CacheService
+    participant Geo as GeocodingService
+    participant Weather as WeatherService
+    participant OpenMeteo as Open-Meteo API
+
+    Client->>Flask: GET /weather?city=Berlin
+    
+    Flask->>Middleware: before_request()
+    Middleware->>Middleware: Generate Correlation ID
+    Middleware->>Middleware: Log request_started
+    
+    Flask->>Cache: get("berlin")
+    
+    alt Cache Hit
+        Cache-->>Flask: Cached weather data
+        Flask->>Middleware: after_request()
+        Flask-->>Client: 200 OK (cached: true)
+    else Cache Miss
+        Cache-->>Flask: None
+        
+        Flask->>Geo: city_to_coords("Berlin")
+        
+        loop Retry with Backoff
+            Geo->>Geo: Check Circuit Breaker
+            Geo->>OpenMeteo: GET /v1/search?name=Berlin
+            OpenMeteo-->>Geo: coordinates
+        end
+        
+        Geo-->>Flask: Coordinates(52.52, 13.41)
+        
+        Flask->>Weather: get_weather(52.52, 13.41)
+        
+        loop Retry with Backoff
+            Weather->>Weather: Check Circuit Breaker
+            Weather->>OpenMeteo: GET /v1/forecast
+            OpenMeteo-->>Weather: weather data
+        end
+        
+        Weather-->>Flask: WeatherData
+        
+        Flask->>Cache: set("berlin", data, ttl=300)
+        
+        Flask->>Middleware: after_request()
+        Flask-->>Client: 200 OK (cached: false)
+    end

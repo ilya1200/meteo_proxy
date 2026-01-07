@@ -1,0 +1,10 @@
+stateDiagram-v2
+    [*] --> Closed
+    
+    Closed --> Open: fail_count >= 5
+    Closed --> Closed: success
+    
+    Open --> HalfOpen: timeout 60s
+    
+    HalfOpen --> Closed: success
+    HalfOpen --> Open: failure

@@ -1,0 +1,89 @@
+classDiagram
+    direction TB
+    
+    class Coordinates {
+        +float latitude
+        +float longitude
+        +str city_name
+        +str country
+        +str country_code
+    }
+    
+    class WeatherData {
+        +float temperature
+        +str temperature_unit
+        +int weather_code
+        +str weather_description
+        +float wind_speed
+        +str wind_speed_unit
+        +float humidity
+        +float apparent_temperature
+        +float precipitation
+        +bool is_day
+    }
+    
+    class Config {
+        +str flask_env
+        +bool debug
+        +str redis_url
+        +int cache_ttl_seconds
+        +str open_meteo_base_url
+        +int circuit_breaker_fail_max
+        +int request_timeout_seconds
+        +int retry_max_attempts
+        +from_env() Config
+    }
+    
+    class GeocodingService {
+        -str base_url
+        -int timeout
+        +city_to_coords(city_name) Coordinates
+        +validate_city(city_name) bool
+    }
+    
+    class WeatherService {
+        -str base_url
+        -int timeout
+        +get_weather(lat, lon) WeatherData
+        +is_available() bool
+    }
+    
+    class CacheService {
+        -str redis_url
+        -int ttl_seconds
+        -Redis _client
+        +get(key) dict
+        +set(key, value, ttl) bool
+        +delete(key) bool
+        +get_ttl(key) int
+        +is_connected() bool
+        +close() void
+    }
+    
+    class GeocodingError {
+        &lt;&lt;exception&gt;&gt;
+    }
+    
+    class CityNotFoundError {
+        &lt;&lt;exception&gt;&gt;
+    }
+    
+    class WeatherServiceError {
+        &lt;&lt;exception&gt;&gt;
+    }
+    
+    class CircuitBreakerOpen {
+        &lt;&lt;exception&gt;&gt;
+    }
+    
+    GeocodingService ..> Coordinates : creates
+    GeocodingService ..> GeocodingError : raises
+    GeocodingService --> Config : uses
+    
+    WeatherService ..> WeatherData : creates
+    WeatherService ..> WeatherServiceError : raises
+    WeatherService --> Config : uses
+    
+    CacheService --> Config : uses
+    
+    CityNotFoundError --|> GeocodingError : extends

@@ -1,0 +1,67 @@
+graph TB
+    subgraph WeatherProxyService["Weather Proxy Service"]
+        subgraph RoutesLayer["Routes Layer"]
+            WR["/weather<br/>weather_bp"]
+            HR["/health<br/>health_bp"]
+            MR["/metrics<br/>metrics_bp"]
+        end
+        
+        subgraph ServicesLayer["Services Layer"]
+            GS["GeocodingService<br/>City → Coordinates"]
+            WS["WeatherService<br/>Fetch Weather Data"]
+            CS["CacheService<br/>Redis Cache"]
+        end
+        
+        subgraph ResilienceLayer["Resilience Layer"]
+            CB["Circuit Breakers<br/>pybreaker"]
+            RT["Retry Logic<br/>tenacity"]
+        end
+        
+        subgraph MiddlewareLayer["Middleware Layer"]
+            CID["Correlation ID<br/>Request Tracing"]
+            LOG["Structured Logging<br/>structlog"]
+        end
+        
+        subgraph InfrastructureLayer["Infrastructure"]
+            CFG["Config<br/>Environment Variables"]
+            MTR["Prometheus Metrics<br/>Counters/Histograms"]
+            SHD["Graceful Shutdown<br/>Signal Handlers"]
+        end
+        
+        APP["Flask App Factory<br/>create_app()"]
+    end
+    
+    APP --> WR
+    APP --> HR
+    APP --> MR
+    APP --> CID
+    APP --> LOG
+    APP --> MTR
+    APP --> SHD
+    
+    WR --> CS
+    WR --> GS
+    WR --> WS
+    HR --> CS
+    HR --> WS
+    
+    GS --> CB
+    GS --> RT
+    WS --> CB
+    WS --> RT
+    
+    CFG -.-> GS
+    CFG -.-> WS
+    CFG -.-> CS
+    CFG -.-> CB
+    CFG -.-> LOG
+    
+    style APP fill:#4a90d9,color:#fff
+    style WR fill:#2ecc71,color:#fff
+    style HR fill:#2ecc71,color:#fff
+    style MR fill:#2ecc71,color:#fff
+    style GS fill:#9b59b6,color:#fff
+    style WS fill:#9b59b6,color:#fff
+    style CS fill:#9b59b6,color:#fff
+    style CB fill:#e74c3c,color:#fff
+    style RT fill:#e74c3c,color:#fff

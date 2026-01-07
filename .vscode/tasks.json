@@ -1,0 +1,149 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Docker: Build Image",
+            "type": "shell",
+            "command": "sudo docker build -t weather-proxy:latest .",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Docker: Run Container",
+            "type": "shell",
+            "command": "sudo docker run --rm -p 8000:8000 --name weather-proxy-test -e REDIS_URL=redis://host.docker.internal:6379/0 weather-proxy:latest",
+            "group": "test",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "dependsOn": "Docker: Build Image"
+        },
+        {
+            "label": "Docker Compose: Up",
+            "type": "shell",
+            "command": "sudo docker compose up -d",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Docker Compose: Up (with build)",
+            "type": "shell",
+            "command": "sudo docker compose up -d --build",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Docker Compose: Down",
+            "type": "shell",
+            "command": "sudo docker compose down",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Docker Compose: Logs",
+            "type": "shell",
+            "command": "sudo docker compose logs -f",
+            "group": "test",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Docker Compose: Restart",
+            "type": "shell",
+            "command": "sudo docker compose down && sudo docker compose up -d --build",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Docker: Stop All Containers",
+            "type": "shell",
+            "command": "sudo docker compose down; sudo docker stop weather-proxy-test 2>/dev/null || true",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Test: Health Check (curl)",
+            "type": "shell",
+            "command": "curl -s http://localhost:8000/health | python -m json.tool",
+            "group": "test",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Test: Weather API (curl Berlin)",
+            "type": "shell",
+            "command": "curl -s 'http://localhost:8000/weather?city=Berlin' | python -m json.tool",
+            "group": "test",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Test: Metrics (curl)",
+            "type": "shell",
+            "command": "curl -s http://localhost:8000/metrics | head -30",
+            "group": "test",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Redis: Start (standalone)",
+            "type": "shell",
+            "command": "sudo docker run -d --rm -p 6379:6379 --name redis-dev redis:7-alpine",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Redis: Stop (standalone)",
+            "type": "shell",
+            "command": "sudo docker stop redis-dev 2>/dev/null || true",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        }
+    ]
+}

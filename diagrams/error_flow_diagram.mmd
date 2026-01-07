@@ -1,0 +1,31 @@
+flowchart TD
+    A[Incoming Request] --> B{Validate Parameters}
+    B -->|Missing city| C[400: MISSING_PARAMETER]
+    B -->|City too long| D[400: INVALID_PARAMETER]
+    B -->|Valid| E{Check Cache}
+    
+    E -->|Cache Hit| F[Return Cached Data]
+    E -->|Cache Miss| G[Geocode City]
+    
+    G --> H{Geocoding Result}
+    H -->|City Not Found| I[404: CITY_NOT_FOUND]
+    H -->|API Error| J[502: GEOCODING_ERROR]
+    H -->|Circuit Open| K[502: Service Unavailable]
+    H -->|Success| L[Fetch Weather]
+    
+    L --> M{Weather Result}
+    M -->|API Error| N[502: WEATHER_SERVICE_ERROR]
+    M -->|Circuit Open| O[502: Service Unavailable]
+    M -->|Success| P[Cache and Return]
+    
+    P --> Q[200: Weather Data]
+    F --> Q
+    
+    style C fill:#e74c3c,color:#fff
+    style D fill:#e74c3c,color:#fff
+    style I fill:#f39c12,color:#fff
+    style J fill:#e74c3c,color:#fff
+    style K fill:#e74c3c,color:#fff
+    style N fill:#e74c3c,color:#fff
+    style O fill:#e74c3c,color:#fff
+    style Q fill:#27ae60,color:#fff

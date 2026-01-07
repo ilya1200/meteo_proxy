@@ -1,0 +1,69 @@
+flowchart TB
+    subgraph Clients
+        C1["Web Client"]
+        C2["Mobile App"]
+        C3["CLI/Script"]
+    end
+    
+    subgraph Infrastructure
+        subgraph ContainerOrchestration["Container Orchestration"]
+            K8S["Kubernetes / Docker Compose"]
+        end
+        
+        subgraph LoadBalancer["Load Balancer"]
+            LB["Nginx / K8s Ingress"]
+        end
+        
+        subgraph ApplicationPods["Application Pods"]
+            subgraph Pod1["Weather Proxy Pod 1"]
+                APP1["Gunicorn + Flask"]
+            end
+            subgraph Pod2["Weather Proxy Pod 2"]
+                APP2["Gunicorn + Flask"]
+            end
+        end
+        
+        subgraph CacheLayer["Cache Layer"]
+            REDIS[("Redis<br/>TTL: 5 min")]
+        end
+        
+        subgraph Monitoring
+            PROM["Prometheus"]
+            GRAF["Grafana"]
+        end
+    end
+    
+    subgraph ExternalAPIs["External APIs - Open-Meteo"]
+        GEO["Geocoding API<br/>geocoding-api.open-meteo.com"]
+        WEATHER["Forecast API<br/>api.open-meteo.com"]
+    end
+    
+    C1 --> LB
+    C2 --> LB
+    C3 --> LB
+    
+    LB --> APP1
+    LB --> APP2
+    
+    APP1 --> REDIS
+    APP2 --> REDIS
+    
+    APP1 --> GEO
+    APP1 --> WEATHER
+    APP2 --> GEO
+    APP2 --> WEATHER
+    
+    APP1 -.-> PROM
+    APP2 -.-> PROM
+    PROM -.-> GRAF
+    
+    K8S --> APP1
+    K8S --> APP2
+    K8S --> REDIS
+    
+    style REDIS fill:#d32f2f,color:#fff
+    style GEO fill:#1976d2,color:#fff
+    style WEATHER fill:#1976d2,color:#fff
+    style LB fill:#7b1fa2,color:#fff
+    style PROM fill:#e65100,color:#fff
+    style GRAF fill:#388e3c,color:#fff

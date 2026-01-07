@@ -1,0 +1,62 @@
+# Docker Compose for Weather Proxy Service
+# Run with: docker-compose up -d
+
+services:
+  # Weather Proxy API
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: weather-proxy
+    ports:
+      - "8000:8000"
+    environment:
+      - FLASK_ENV=production
+      - REDIS_URL=redis://redis:6379/0
+      - CACHE_TTL_SECONDS=300
+      - OPEN_METEO_BASE_URL=https://api.open-meteo.com
+      - OPEN_METEO_GEOCODING_URL=https://geocoding-api.open-meteo.com
+      - CIRCUIT_BREAKER_FAIL_MAX=5
+      - CIRCUIT_BREAKER_RESET_TIMEOUT=60
+      - REQUEST_TIMEOUT_SECONDS=10
+      - RETRY_MAX_ATTEMPTS=3
+      - LOG_LEVEL=INFO
+      - LOG_FORMAT=json
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - weather-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: weather-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - weather-network
+    command: redis-server --appendonly yes
+
+volumes:
+  redis-data:
+    driver: local
+
+networks:
+  weather-network:
+    driver: bridge
