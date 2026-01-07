@@ -84,19 +84,21 @@ def create_app(
     @app.route("/")
     def api_root() -> tuple[Any, int]:
         """Return API information and available endpoints."""
-        return jsonify({
-            "name": "Weather Proxy API",
-            "version": __version__,
-            "description": "A proxy service for Open-Meteo weather data with caching and resilience patterns",
-            "endpoints": {
-                "GET /": "API information (this endpoint)",
-                "GET /weather?city={name}": "Get current weather for a city",
-                "GET /health": "Service health check with dependency status",
-                "GET /metrics": "Prometheus-compatible metrics",
-            },
-            "example": "GET /weather?city=Berlin",
-            "docs": "https://github.com/ilya1200/meteo_proxy#readme",
-        }), 200
+        return jsonify(
+            {
+                "name": "Weather Proxy API",
+                "version": __version__,
+                "description": "A proxy service for Open-Meteo weather data with caching and resilience patterns",
+                "endpoints": {
+                    "GET /": "API information (this endpoint)",
+                    "GET /weather?city={name}": "Get current weather for a city",
+                    "GET /health": "Service health check with dependency status",
+                    "GET /metrics": "Prometheus-compatible metrics",
+                },
+                "example": "GET /weather?city=Berlin",
+                "docs": "https://github.com/ilya1200/meteo_proxy#readme",
+            }
+        ), 200
 
     return app
 
